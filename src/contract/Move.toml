@@ -1,0 +1,19 @@
+[package]
+name = "sampled"
+version = "1.0.0"
+authors = []
+
+[addresses]
+sampled_addr = "0x84c5633ea19673377f5448f5c004c45a7b31329e66c1b51c903addb7a405d196"
+std = "0x1"
+aptos_framework = "0x1"
+aptos_std = "0x1"
+
+[dev-addresses]
+
+[dependencies.AptosFramework]
+git = "https://github.com/movementlabsxyz/aptos-core.git"
+rev = "movement"
+subdir = "aptos-move/framework/aptos-framework"
+
+[dev-dependencies]
