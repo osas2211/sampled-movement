@@ -29,7 +29,8 @@ module sampled_addr::sampled_marketplace {
     const E_NO_EARNINGS: u64 = 9;
     const E_SAMPLE_TITLE_EXISTS: u64 = 10;
     const E_TITLE_TOO_LONG: u64 = 11;
-    const E_IPFS_HASH_TOO_LONG: u64 = 12;
+    const E_IPFS_LINK_TOO_LONG: u64 = 12;
+    const E_COVER_IMAGE_TOO_LONG: u64 = 14;
     const E_GENRE_TOO_LONG: u64 = 13;
 
     // ============================================
@@ -39,7 +40,8 @@ module sampled_addr::sampled_marketplace {
     const PLATFORM_FEE_NUMERATOR: u64 = 10;
     const PLATFORM_FEE_DENOMINATOR: u64 = 100;
     const MAX_TITLE_LENGTH: u64 = 100;
-    const MAX_IPFS_HASH_LENGTH: u64 = 256;
+    const MAX_IPFS_LINK_LENGTH: u64 = 256;
+    const MAX_COVER_IMAGE_LENGTH: u64 = 256;
     const MAX_GENRE_LENGTH: u64 = 30;
 
     // ============================================
@@ -50,10 +52,11 @@ module sampled_addr::sampled_marketplace {
         sample_id: u64,
         seller: address,
         price: u64,              // Price in octas (APT smallest unit)
-        ipfs_hash: String,       // IPFS hash for audio file
+        ipfs_link: String,       // IPFS link for audio file
         title: String,
         bpm: u64,
         genre: String,
+        cover_image: String,     // IPFS link for cover image
         total_sales: u64,
         is_active: bool,
         created_at: u64,
@@ -87,7 +90,7 @@ module sampled_addr::sampled_marketplace {
         seller: address,
         price: u64,
         timestamp: u64,
-        ipfs_hash: String,
+        ipfs_link: String,
     }
 
     // ============================================
@@ -99,7 +102,8 @@ module sampled_addr::sampled_marketplace {
         seller: address,
         price: u64,
         title: String,
-        ipfs_hash: String,
+        ipfs_link: String,
+        cover_image: String,
         timestamp: u64,
     }
 
@@ -157,35 +161,38 @@ module sampled_addr::sampled_marketplace {
     public entry fun upload_sample(
         seller: &signer,
         price: u64,
-        ipfs_hash: String,
+        ipfs_link: String,
         title: String,
         bpm: u64,
         genre: String,
+        cover_image: String,
     ) acquires Marketplace, UserAccount {
         let seller_addr = signer::address_of(seller);
-        
+
         // Validate inputs
         assert!(price > 0, E_INVALID_PRICE);
         assert!(string::length(&title) <= MAX_TITLE_LENGTH, E_TITLE_TOO_LONG);
-        assert!(string::length(&ipfs_hash) <= MAX_IPFS_HASH_LENGTH, E_IPFS_HASH_TOO_LONG);
+        assert!(string::length(&ipfs_link) <= MAX_IPFS_LINK_LENGTH, E_IPFS_LINK_TOO_LONG);
         assert!(string::length(&genre) <= MAX_GENRE_LENGTH, E_GENRE_TOO_LONG);
-        
+        assert!(string::length(&cover_image) <= MAX_COVER_IMAGE_LENGTH, E_COVER_IMAGE_TOO_LONG);
+
         // Get marketplace
         let marketplace = borrow_global_mut<Marketplace>(@sampled_addr);
-        
+
         // Generate new sample ID
         let sample_id = marketplace.sample_count + 1;
         marketplace.sample_count = sample_id;
-        
+
         // Create sample struct
         let sample = Sample {
             sample_id,
             seller: seller_addr,
             price,
-            ipfs_hash,
+            ipfs_link,
             title,
             bpm,
             genre,
+            cover_image,
             total_sales: 0,
             is_active: true,
             created_at: timestamp::now_seconds(),
@@ -217,7 +224,8 @@ module sampled_addr::sampled_marketplace {
                 seller: seller_addr,
                 price,
                 title,
-                ipfs_hash,
+                ipfs_link,
+                cover_image,
                 timestamp: timestamp::now_seconds(),
             },
         );
@@ -280,7 +288,7 @@ module sampled_addr::sampled_marketplace {
             seller: sample.seller,
             price: sample.price,
             timestamp: timestamp::now_seconds(),
-            ipfs_hash: sample.ipfs_hash,
+            ipfs_link: sample.ipfs_link,
         };
         table::add(&mut buyer_account.purchase_history, sample_id, purchase_record);
         
@@ -471,9 +479,79 @@ module sampled_addr::sampled_marketplace {
         if (!exists<UserAccount>(user_addr)) {
             return 0
         };
-        
+
         let account = borrow_global<UserAccount>(user_addr);
         account.earnings
+    }
+
+    #[view]
+    /// Get all active samples in the marketplace
+    public fun get_all_samples(): vector<Sample> acquires Marketplace {
+        let marketplace = borrow_global<Marketplace>(@sampled_addr);
+        let result = vector::empty<Sample>();
+        let i = 1u64;
+
+        while (i <= marketplace.sample_count) {
+            if (table::contains(&marketplace.samples, i)) {
+                let sample = *table::borrow(&marketplace.samples, i);
+                if (sample.is_active) {
+                    vector::push_back(&mut result, sample);
+                };
+            };
+            i = i + 1;
+        };
+
+        result
+    }
+
+    #[view]
+    /// Get full sample data for user's uploaded samples
+    public fun get_user_samples_full(user_addr: address): vector<Sample> acquires UserAccount, Marketplace {
+        if (!exists<UserAccount>(user_addr)) {
+            return vector::empty()
+        };
+
+        let account = borrow_global<UserAccount>(user_addr);
+        let marketplace = borrow_global<Marketplace>(@sampled_addr);
+        let result = vector::empty<Sample>();
+        let len = vector::length(&account.uploaded_samples);
+        let i = 0u64;
+
+        while (i < len) {
+            let sample_id = *vector::borrow(&account.uploaded_samples, i);
+            if (table::contains(&marketplace.samples, sample_id)) {
+                let sample = *table::borrow(&marketplace.samples, sample_id);
+                vector::push_back(&mut result, sample);
+            };
+            i = i + 1;
+        };
+
+        result
+    }
+
+    #[view]
+    /// Get full sample data for user's purchased samples
+    public fun get_user_purchases_full(user_addr: address): vector<Sample> acquires UserAccount, Marketplace {
+        if (!exists<UserAccount>(user_addr)) {
+            return vector::empty()
+        };
+
+        let account = borrow_global<UserAccount>(user_addr);
+        let marketplace = borrow_global<Marketplace>(@sampled_addr);
+        let result = vector::empty<Sample>();
+        let len = vector::length(&account.purchased_samples);
+        let i = 0u64;
+
+        while (i < len) {
+            let sample_id = *vector::borrow(&account.purchased_samples, i);
+            if (table::contains(&marketplace.samples, sample_id)) {
+                let sample = *table::borrow(&marketplace.samples, sample_id);
+                vector::push_back(&mut result, sample);
+            };
+            i = i + 1;
+        };
+
+        result
     }
 
     // ============================================
