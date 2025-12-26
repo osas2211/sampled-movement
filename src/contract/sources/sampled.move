@@ -28,6 +28,9 @@ module sampled_addr::sampled_marketplace {
     const E_ALREADY_PURCHASED: u64 = 8;
     const E_NO_EARNINGS: u64 = 9;
     const E_SAMPLE_TITLE_EXISTS: u64 = 10;
+    const E_TITLE_TOO_LONG: u64 = 11;
+    const E_IPFS_HASH_TOO_LONG: u64 = 12;
+    const E_GENRE_TOO_LONG: u64 = 13;
 
     // ============================================
     // Constants
@@ -36,7 +39,7 @@ module sampled_addr::sampled_marketplace {
     const PLATFORM_FEE_NUMERATOR: u64 = 10;
     const PLATFORM_FEE_DENOMINATOR: u64 = 100;
     const MAX_TITLE_LENGTH: u64 = 100;
-    const MAX_IPFS_HASH_LENGTH: u64 = 64;
+    const MAX_IPFS_HASH_LENGTH: u64 = 256;
     const MAX_GENRE_LENGTH: u64 = 30;
 
     // ============================================
@@ -163,9 +166,9 @@ module sampled_addr::sampled_marketplace {
         
         // Validate inputs
         assert!(price > 0, E_INVALID_PRICE);
-        assert!(string::length(&title) <= MAX_TITLE_LENGTH, E_SAMPLE_TITLE_EXISTS);
-        assert!(string::length(&ipfs_hash) <= MAX_IPFS_HASH_LENGTH, E_SAMPLE_TITLE_EXISTS);
-        assert!(string::length(&genre) <= MAX_GENRE_LENGTH, E_SAMPLE_TITLE_EXISTS);
+        assert!(string::length(&title) <= MAX_TITLE_LENGTH, E_TITLE_TOO_LONG);
+        assert!(string::length(&ipfs_hash) <= MAX_IPFS_HASH_LENGTH, E_IPFS_HASH_TOO_LONG);
+        assert!(string::length(&genre) <= MAX_GENRE_LENGTH, E_GENRE_TOO_LONG);
         
         // Get marketplace
         let marketplace = borrow_global_mut<Marketplace>(@sampled_addr);
