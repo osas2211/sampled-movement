@@ -58,7 +58,7 @@ export function WalletSelectionModal({
           // Connect directly to Movement Network
           const networkInfo = {
             chainId: 250, // Movement Testnet
-            name: Network.TESTNET,
+            name: Network.CUSTOM,
             url: "https://testnet.movementnetwork.xyz/v1",
           };
 

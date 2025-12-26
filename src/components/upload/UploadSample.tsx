@@ -8,7 +8,6 @@ import React, {
 } from "react";
 import { Upload, Music, Check, X, Zap } from "lucide-react";
 import { useUploadSample } from "../../hooks/useSampledContract";
-import { useWallet } from "../../hooks/useWallet";
 import { Button } from "antd";
 import { InAppHeader } from "../shared/InAppHeader";
 import { useUploadFileToIPFS } from "../../hooks/usePinata";
@@ -16,6 +15,7 @@ import { toast } from "sonner";
 import { BsCheckCircleFill } from "react-icons/bs";
 import { IoCloseCircleSharp } from "react-icons/io5";
 import { Link } from "react-router-dom";
+import { useWallet } from "@aptos-labs/wallet-adapter-react"
 
 // Type definitions
 interface SampleFormData {
@@ -309,10 +309,10 @@ const UploadUI: React.FC<UploadUIProps> = ({ platformFeePercentage = 10 }) => {
     isPending: isUploadingFile,
     uploadProgress: pinataProgress,
   } = useUploadFileToIPFS();
-  const { address } = useWallet();
+  const { account } = useWallet();
 
   const handleUpload = async (): Promise<void> => {
-    if (!address) {
+    if (!account?.address.toString()) {
       toast.error("Error", {
         className: "!bg-red-500 *:!text-white !border-0",
         description: <p className="text-white">Wallet not connected</p>,
@@ -338,7 +338,7 @@ const UploadUI: React.FC<UploadUIProps> = ({ platformFeePercentage = 10 }) => {
         bpm: Number(formData.bpm),
         title: formData.title,
         genre: formData.genre,
-        seller: address,
+        seller:  account?.address.toString(),
         cover_image: coverImageLink,
       });
 
@@ -349,7 +349,7 @@ const UploadUI: React.FC<UploadUIProps> = ({ platformFeePercentage = 10 }) => {
         icon: <BsCheckCircleFill />,
         action: (
           <Link
-            to={`https://explorer.movementnetwork.xyz/tx/${response?.transactionHash}`}
+            to={`https://explorer.movementnetwork.xyz/txn/${response?.hash}?network=bardock+testnet`}
             target="_blank"
             className="underline font-semibold"
           >
