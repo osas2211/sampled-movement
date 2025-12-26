@@ -35,7 +35,7 @@ export const UserProfile = () => {
           />
           <div className="md:space-y-5 space-y-3">
             <p className="md:text-3xl text-lg font-arvo font-semibold">
-              @Movment
+              @Movement
             </p>
             <div className="bg-white/5 border-[1px] border-white/10 rounded-full backdrop-blur-[25px] p-2 px-3 inline-block">
               <div className="flex items-center gap-2">

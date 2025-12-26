@@ -253,14 +253,16 @@ export const useGetUserPurchases = () => {
   return useQuery({
     queryFn: async () => {
       if (!account?.address.toString()) return []
+      const samples = await aptos.view({
+        payload: {
+          function: `${CONTRACT_ADDRESS}::sampled_marketplace::get_user_purchases_full`,
+          functionArguments: [account?.address?.toString()],
+        }
+      })
 
-      // TODO: Implement Movement contract query
-      // const client = new MovementClient({ network: "testnet" });
-      // const result = await client.contracts.sampled.get_user_purchases({ buyer:  account?.address.toString() });
-      // return result;
+      console.log("Get user samples for:", account)
+      return samples?.[0] as ISample[] || []
 
-      console.log("Get user purchases:", account?.address.toString())
-      return []
     },
     queryKey: ["user-purchases", account?.address.toString()],
     enabled: !!account?.address.toString(),
@@ -299,13 +301,15 @@ export const useGetUserEarnings = () => {
     queryFn: async () => {
       if (!account?.address.toString()) return 0
 
-      // TODO: Implement Movement contract query
-      // const client = new MovementClient({ network: "testnet" });
-      // const result = await client.contracts.sampled.get_earnings({ user:  account?.address.toString() });
-      // return result;
+      const earnings = await aptos.view({
+        payload: {
+          function: `${CONTRACT_ADDRESS}::sampled_marketplace::get_earnings`,
+          functionArguments: [account?.address?.toString()],
+        }
+      })
 
-      console.log("Get user earnings:", account?.address.toString())
-      return 0
+      console.log("Get user earnings for:", account)
+      return earnings?.[0] as number || 0
     },
     queryKey: ["user-earnings", account?.address.toString()],
     enabled: !!account?.address.toString(),
