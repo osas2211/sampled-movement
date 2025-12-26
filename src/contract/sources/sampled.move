@@ -68,7 +68,10 @@ module sampled_addr::sampled_marketplace {
         total_volume: u64,
         platform_fee_collected: u64,
         admin: address,
-        
+        // Resource account for holding escrowed funds
+        resource_addr: address,
+        signer_cap: account::SignerCapability,
+
         // Event handles
         sample_uploaded_events: EventHandle<SampleUploadedEvent>,
         sample_purchased_events: EventHandle<SamplePurchasedEvent>,
@@ -135,10 +138,18 @@ module sampled_addr::sampled_marketplace {
     /// Initialize the marketplace (only admin can call)
     public entry fun initialize(admin: &signer) {
         let admin_addr = signer::address_of(admin);
-        
+
         // Ensure not already initialized
         assert!(!exists<Marketplace>(@sampled_addr), E_ALREADY_INITIALIZED);
-        
+
+        // Create resource account to hold escrowed funds
+        let seed = b"sampled_escrow";
+        let (resource_signer, signer_cap) = account::create_resource_account(admin, seed);
+        let resource_addr = signer::address_of(&resource_signer);
+
+        // Register the resource account to receive AptosCoin
+        coin::register<AptosCoin>(&resource_signer);
+
         // Create marketplace resource
         move_to(admin, Marketplace {
             samples: table::new(),
@@ -146,6 +157,8 @@ module sampled_addr::sampled_marketplace {
             total_volume: 0,
             platform_fee_collected: 0,
             admin: admin_addr,
+            resource_addr,
+            signer_cap,
             sample_uploaded_events: account::new_event_handle<SampleUploadedEvent>(admin),
             sample_purchased_events: account::new_event_handle<SamplePurchasedEvent>(admin),
             earnings_withdrawn_events: account::new_event_handle<EarningsWithdrawnEvent>(admin),
@@ -251,10 +264,10 @@ module sampled_addr::sampled_marketplace {
         // Calculate fees
         let platform_fee = (sample.price * PLATFORM_FEE_NUMERATOR) / PLATFORM_FEE_DENOMINATOR;
         let seller_amount = sample.price - platform_fee;
-        
-        // Transfer payment from buyer to seller
-        coin::transfer<AptosCoin>(buyer, sample.seller, seller_amount);
-        
+
+        // Transfer seller's earnings to resource account (escrow)
+        coin::transfer<AptosCoin>(buyer, marketplace.resource_addr, seller_amount);
+
         // Transfer platform fee to admin
         coin::transfer<AptosCoin>(buyer, marketplace.admin, platform_fee);
         
@@ -370,28 +383,34 @@ module sampled_addr::sampled_marketplace {
         user: &signer,
     ) acquires UserAccount, Marketplace {
         let user_addr = signer::address_of(user);
-        
+
         // Check user has account
         assert!(exists<UserAccount>(user_addr), E_NOT_INITIALIZED);
-        
+
         // Get user account
         let user_account = borrow_global_mut<UserAccount>(user_addr);
-        
+
         // Check earnings
         assert!(user_account.earnings > 0, E_NO_EARNINGS);
-        
+
         let amount = user_account.earnings;
         user_account.earnings = 0;
-        
-        // Note: Actual withdrawal would have already happened during purchase
-        // This just tracks that earnings were claimed
-        
-        // Get marketplace for events
-        let marketplace = borrow_global_mut<Marketplace>(@sampled_addr);
-        
+
+        // Get marketplace to access signer capability
+        let marketplace = borrow_global<Marketplace>(@sampled_addr);
+
+        // Create signer from capability to transfer from escrow
+        let resource_signer = account::create_signer_with_capability(&marketplace.signer_cap);
+
+        // Transfer earnings from escrow to user
+        coin::transfer<AptosCoin>(&resource_signer, user_addr, amount);
+
+        // Get mutable marketplace for events
+        let marketplace_mut = borrow_global_mut<Marketplace>(@sampled_addr);
+
         // Emit event
         event::emit_event(
-            &mut marketplace.earnings_withdrawn_events,
+            &mut marketplace_mut.earnings_withdrawn_events,
             EarningsWithdrawnEvent {
                 user: user_addr,
                 amount,

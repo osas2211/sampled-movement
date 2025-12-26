@@ -16,7 +16,7 @@ const config = new AptosConfig({
 })
 const aptos = new Aptos(config)
 
-const CONTRACT_ADDRESS = "0x6cffb3c2adfd5e864ec6dd8399a74a0e3013df83ad7a50ac9d67f53d467c7513"
+const CONTRACT_ADDRESS = "0x462d050a0ff74fd8bb7afa8a70c3b63eedd7313cf5cfc1e47e285c7a3428a974"
 
 // TODO: Import Movement SDK when available
 // import { MovementClient } from "@movement-labs/sdk";
@@ -321,23 +321,27 @@ export const useGetUserEarnings = () => {
  * TODO: Implement with Movement SDK
  */
 export const useWithdrawEarnings = () => {
-  const { account, signTransaction } = useWallet()
+  const { account, signAndSubmitTransaction } = useWallet()
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (_user: string) => {
+    mutationFn: async () => {
       if (!account?.address.toString()) {
         throw new Error("Please connect your wallet first")
       }
 
-      // TODO: Implement Movement contract call
-      // const client = new MovementClient({ network: "testnet" });
-      // const tx = await client.contracts.sampled.withdraw_earnings({ user:  account?.address.toString() });
-      // const result = await signTransaction(tx);
-      // return { transactionHash: result.hash };
+      const response = await signAndSubmitTransaction({
+        sender: account.address,
+        data: {
+          function: `${CONTRACT_ADDRESS}::sampled_marketplace::withdraw_earnings`,
+          functionArguments: [
+          ],
+        }
+      })
+      const transactionRes = await aptos.waitForTransaction({ transactionHash: response.hash })
+      return transactionRes
 
-      console.log("Withdraw earnings for:", account?.address.toString())
-      throw new Error("Movement contract integration not yet implemented")
+
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user-earnings", account?.address.toString()] })

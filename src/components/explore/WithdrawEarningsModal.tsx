@@ -9,7 +9,6 @@ import {
   useWithdrawEarnings,
 } from "../../hooks/useSampledContract";
 import { useWalletBalance } from "../../hooks/useWalletBalance";
-import { useWallet } from "../../hooks/useWallet";
 import { toast } from "sonner";
 import { BsCheckCircleFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
@@ -18,21 +17,12 @@ export const WithdrawEarningsModal = () => {
   const [openModal, setOpenModal] = useState(false);
   const { data: earnings, refetch: refetchEarnings } = useGetUserEarnings();
   const { updateBalance } = useWalletBalance();
-  const { address } = useWallet();
   const { mutate, isPending } = useWithdrawEarnings();
 
   const handleWithdraw = async () => {
-    if (!address) {
-      // TODO: Implement Movement wallet connection
-      toast.error("Error", {
-        className: "!bg-red-500 *:!text-white !border-0",
-        description: "Please connect your wallet first",
-        duration: 5000,
-      });
-      return;
-    }
+    
 
-    mutate(address, {
+    mutate(undefined, {
       onSuccess: async (data) => {
         // Refetch purchase status
         toast.success("Success", {
@@ -42,7 +32,7 @@ export const WithdrawEarningsModal = () => {
           icon: <BsCheckCircleFill />,
           action: (
             <Link
-              to={`https://explorer.movementnetwork.xyz/txn/${data?.transactionHash}`}
+              to={`https://explorer.movementnetwork.xyz/txn/${data?.hash}?network=bardock+testnet`}
               target="_blank"
               className="underline font-semibold"
             >
