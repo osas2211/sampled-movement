@@ -4,7 +4,7 @@ import { Avatar, Button, Modal } from "antd";
 import { useState } from "react";
 import { BiCoinStack } from "react-icons/bi";
 import {
-  stroopsToXlm,
+  octasToMove,
   useGetUserEarnings,
   useWithdrawEarnings,
 } from "../../hooks/useSampledContract";
@@ -42,7 +42,7 @@ export const WithdrawEarningsModal = () => {
           icon: <BsCheckCircleFill />,
           action: (
             <Link
-              to={`https://explorer.movementnetwork.xyz/tx/${data?.transactionHash}`}
+              to={`https://explorer.movementnetwork.xyz/txn/${data?.transactionHash}`}
               target="_blank"
               className="underline font-semibold"
             >
@@ -79,8 +79,8 @@ export const WithdrawEarningsModal = () => {
           <div>
             <p>Amount to withdraw:</p>
             <div className="flex items-center gap-2 mt-2">
-              <Avatar src="/favicon.ico" size={24} />
-              <p className="text-lg">{stroopsToXlm(earnings || 0)} XLM</p>
+              <Avatar src="/assets/images/movement-logo.png" size={24} />
+              <p className="text-lg">{octasToMove(earnings || 0)} MOVE</p>
             </div>
           </div>
           <div className="bg-amber-500/10 p-3 rounded-lg">
@@ -93,7 +93,7 @@ export const WithdrawEarningsModal = () => {
         </div>
       </Modal>
 
-      {stroopsToXlm(earnings || 0) > 0 && (
+      {octasToMove(earnings || 0) > 0 && (
         <Button
           icon={<BiCoinStack />}
           iconPosition="end"

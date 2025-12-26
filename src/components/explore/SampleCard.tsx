@@ -1,11 +1,11 @@
 import { Avatar } from "antd";
 import { BiPlay, BiUser } from "react-icons/bi";
 import { BsFire } from "react-icons/bs";
-import { Sample } from "../../@types/stellar-generated";
+import { ISample } from "../../@types/sample"
 import { Link } from "react-router-dom";
 
 interface propsI {
-  sample: Sample;
+  sample: ISample;
 }
 
 export const SampleCard = ({ sample }: propsI) => {
@@ -20,7 +20,7 @@ export const SampleCard = ({ sample }: propsI) => {
 
         <div className="relative h-[25rem] w-full z-[1]">
           <img
-            src={sample?.cover_image || "/favicon.ico"}
+            src={sample?.cover_image || "/assets/images/vr_guy.jpg"}
             alt=""
             // fill
             className="w-full h-full object-cover rounded-xl"
@@ -28,7 +28,7 @@ export const SampleCard = ({ sample }: propsI) => {
           <div className="absolute bottom-0 left-0 h-[11rem] w-full rounded-b-xl bg-black/15 backdrop-blur-[15px] z-[2] p-3">
             <p className="text-xl font-arvo">{sample?.title}</p>
             <div className="flex items-center gap-1">
-              <Avatar src={sample?.cover_image || "/favicon.ico"}>
+              <Avatar src={sample?.cover_image || "/assets/images/movement-logo.png"}>
                 <BiUser />
               </Avatar>
               <p className="text-sm truncate max-w-20">{sample?.seller}</p>
@@ -36,7 +36,7 @@ export const SampleCard = ({ sample }: propsI) => {
 
             <div className="relative bg-white/5 p-2 rounded-full mt-4  backdrop-blur-[7px] text-sm border-[1px] border-white/10 flex items-center gap-2 justify-between">
               <div>
-                <Avatar size={38} className="bg-dark-1000" src="/favicon.ico">
+                <Avatar size={38} className="bg-dark-1000" src="/assets/images/movement-logo.png">
                   <BsFire className="text-red-500" size={14} />
                 </Avatar>
               </div>
@@ -47,7 +47,7 @@ export const SampleCard = ({ sample }: propsI) => {
                 </div>
               </div>
 
-              <Link to={`/sample/${sample?.id}`}>
+              <Link to={`/sample/${sample?.sample_id}`}>
                 <div>
                   <Avatar
                     size={38}

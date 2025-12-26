@@ -51,7 +51,7 @@ export const InAppHeader = () => {
               </Link>
             </div>
             <div className="h-[45px] w-[45px] bg-grey-800 rounded-full flex items-center justify-center">
-              <Avatar src="/favicon.ico" size={25} />
+              <Avatar src="/assets/images/movement-logo.png" size={25} />
             </div>
           </nav>
         </div>
@@ -102,7 +102,7 @@ export const InAppHeader = () => {
             </Link>
           </div>
           <div className="h-[40px] w-[40px] bg-grey-800 rounded-full flex items-center justify-center">
-            <Avatar src="/favicon.ico" size={15} />
+            <Avatar src="/assets/images/movement-logo.png" size={15} />
           </div>
         </nav>
       </div>

@@ -4,24 +4,24 @@ import { BsTwitterX } from "react-icons/bs";
 import { FaDiscord, FaFacebook, FaInstagram } from "react-icons/fa6";
 import { MdOutlineArrowForward } from "react-icons/md";
 import { Link } from "react-router-dom";
-import { useWallet } from "../../hooks/useWallet";
 import { truncateString } from "../../util/string-helpers";
-import { SiStellar } from "react-icons/si";
 import {
-  stroopsToXlm,
+  octasToMove,
   useGetUserEarnings,
   useGetUserSamples,
 } from "../../hooks/useSampledContract";
 import { WithdrawEarningsModal } from "./WithdrawEarningsModal";
-import { Sample } from "../../@types/stellar-generated";
+import { ISample } from "../../@types/sample"
+import { Wallet2 } from "lucide-react"
+import { useWallet } from "@aptos-labs/wallet-adapter-react"
 
 export const UserProfile = () => {
-  const { address } = useWallet();
+  const { account } = useWallet();
   const { data: user_samples } = useGetUserSamples();
   const { data: earnings } = useGetUserEarnings();
 
   const hits = user_samples?.reduce(
-    (prev: number, curr: Sample) => prev + curr.total_sales,
+    (prev: number, curr: ISample) => prev + Number(curr.total_sales),
     0,
   );
   return (
@@ -30,17 +30,17 @@ export const UserProfile = () => {
       <div className="w-full md:p-6 md:px-10 p-4 rounded-xl md:flex items-center justify-between gap-3 flex-wrap bg-dark-800/55 border-[1px] border-white/5 relative backdrop-blur-[50px]">
         <div className="flex items-center gap-4">
           <Avatar
-            src="/favicon.ico"
+            src="/assets/images/movement-logo.png"
             className="md:w-[160px] md:h-[160px] w-[90px] h-[90px]"
           />
           <div className="md:space-y-5 space-y-3">
             <p className="md:text-3xl text-lg font-arvo font-semibold">
-              @Stellar
+              @Movment
             </p>
             <div className="bg-white/5 border-[1px] border-white/10 rounded-full backdrop-blur-[25px] p-2 px-3 inline-block">
               <div className="flex items-center gap-2">
-                <SiStellar className="text-orange-400" size={20} />
-                <p className="text-sm">{truncateString(address ?? "")}</p>
+                <Wallet2 className="text-orange-400" size={20} />
+                <p className="text-sm">{truncateString(account?.address?.toString() ?? "")}</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -74,7 +74,7 @@ export const UserProfile = () => {
           <div>
             <p className="text-sm text-white/80">Earnings</p>
             <p className="text-[17px] font-semibold">
-              {stroopsToXlm(earnings ?? 0)} XLM
+              {octasToMove(earnings ?? 0)} MOVE
             </p>
           </div>
           <div>

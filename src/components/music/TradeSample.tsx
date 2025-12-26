@@ -6,26 +6,18 @@ import { TbTrendingUp } from "react-icons/tb";
 import { PurchaseSampleTab } from "./PurchaseSampleTab";
 import SampleInfoTabs from "./SampleInfoTabs";
 // TODO: Define Sample type for Movement M1
-type Sample = {
-  id: number;
-  seller: string;
-  title: string;
-  price: number;
-  ipfs_link: string;
-  cover_image?: string;
-  total_sales?: number;
-  is_active?: boolean;
-};
+
 import { Link } from "react-router-dom";
 import { truncateString } from "../../util/string-helpers";
-import { stroopsToXlm } from "../../hooks/useSampledContract";
+import { octasToMove } from "../../hooks/useSampledContract";
+import { ISample } from "../../@types/sample"
 
-export const TradeSample = ({ sample }: { sample: Sample }) => {
+export const TradeSample = ({ sample }: { sample: ISample }) => {
   return (
     <div className="w-full bg-grey-900 rounded-2xl py-4 px-3 space-y-5 text-sm md:col-span-2">
       <div className="flex items-center justify-between">
         <div className="flex gap-2 items-center">
-          <Avatar src={sample?.cover_image || "/favicon.ico"} />
+          <Avatar src={sample?.cover_image || "/assets/images/movement-logo.png"} />
           <Link
             to={`https://explorer.movementnetwork.xyz/account/${sample?.seller}`}
             target="_blank"
@@ -49,7 +41,7 @@ export const TradeSample = ({ sample }: { sample: Sample }) => {
           <div className="flex items-center gap-1">
             <TbTrendingUp />
             <p className="text-primary text-sm">
-              {stroopsToXlm(sample?.price)} XLM
+              {octasToMove(sample?.price)} MOVE
             </p>
           </div>
         </div>

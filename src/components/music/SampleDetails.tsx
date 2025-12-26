@@ -31,7 +31,7 @@ export const SampleDetails = () => {
           <p>Chain</p>
         </div>
         <div className="flex items-center gap-1">
-          <Avatar src="/favicon.ico" size={16} />
+          <Avatar src="/assets/images/movement-logo.png" size={16} />
           <p>Stellar</p>
         </div>
       </div>
@@ -41,7 +41,7 @@ export const SampleDetails = () => {
           <p>Pair</p>
         </div>
         <div className="flex items-center gap-1">
-          <p>XLM</p>
+          <p>MOVE</p>
         </div>
       </div>
       <div className="flex items-center gap-4 justify-between p-4 py-3 rounded-lg">

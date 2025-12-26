@@ -1,12 +1,12 @@
 import { Avatar } from "antd";
 import { TbPlayerPlayFilled } from "react-icons/tb";
 import { Link } from "react-router-dom";
-import { Sample } from "../../@types/stellar-generated";
+import { ISample } from "../../@types/sample"
 import { truncateString } from "../../util/string-helpers";
-import { stroopsToXlm } from "../../hooks/useSampledContract";
+import { octasToMove } from "../../hooks/useSampledContract";
 
 interface propsI {
-  sample: Sample;
+  sample: ISample;
   index: number;
 }
 
@@ -19,7 +19,7 @@ export const SampleListCard = ({ sample, index }: propsI) => {
           <div>
             <img
               alt=""
-              src={sample?.cover_image || "/favicon.ico"}
+              src={sample?.cover_image || "/assets/images/vr_guy.jpg"}
               className="rounded-lg object-cover h-[55px] w-[55px]"
             />
           </div>
@@ -30,10 +30,10 @@ export const SampleListCard = ({ sample, index }: propsI) => {
         </div>
         <p className="text-sm md:block hidden">{sample?.total_sales} Sales</p>
         <div className="flex gap-2 items-center">
-          <Avatar src={"/favicon.ico"} size={20} />
-          <p className="text-sm">{stroopsToXlm(sample?.price)} XLM</p>
+          <Avatar src={"/assets/images/movement-logo.png"} size={20} />
+          <p className="text-sm">{octasToMove(sample?.price)} MOVE</p>
         </div>
-        <Link to={`/sample/${sample?.id}`}>
+        <Link to={`/sample/${sample?.sample_id}`}>
           <div className="md:h-[44px] h-[35px] md:w-[44px] w-[35px] rounded-full bg-primary-default flex items-center justify-center cursor-pointer">
             <TbPlayerPlayFilled size={20} />
           </div>

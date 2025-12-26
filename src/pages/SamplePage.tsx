@@ -10,7 +10,7 @@ import { useParams } from "react-router-dom";
 import { truncateString } from "../util/string-helpers";
 import { Download } from "lucide-react";
 import { downloadAudio } from "../util/download-audio";
-import { useWallet } from "../hooks/useWallet";
+import { useWallet } from "@aptos-labs/wallet-adapter-react"
 
 const SamplePage = () => {
   const { id } = useParams();
@@ -20,15 +20,16 @@ const SamplePage = () => {
     url: data?.ipfs_link ?? "",
     title: data?.title ?? "",
     artist: truncateString(data?.seller ?? ""),
-    artwork: data?.cover_image || "/favicon.ico",
+    artwork: data?.cover_image || "/assets/images/movement-logo.png",
   };
 
   const handlePlayTrack = () => {
     playTrack(track);
   };
 
-  const { data: hasPurchased } = useHasPurchased(Number(id));
-  const { address } = useWallet();
+  const { data: hasPurchased } = useHasPurchased(String(id));
+  const {account} = useWallet()
+  const address = account?.address?.toString()
   const isSeller = address === data?.seller;
   return (
     <>
@@ -37,11 +38,11 @@ const SamplePage = () => {
           <div className="md:h-[19rem] bg-grey-600 rounded-t-xl py-6 pt-9 px-6 flex md:flex-row flex-col md:items-end gap-4 relative">
             <img
               className="absolute top-0 left-0 opacity-10 w-full h-full rounded-md object-cover object-top shadow-2xl shadow-grey-900"
-              src={data?.cover_image || "/favicon.ico"}
+              src={data?.cover_image || "/assets/images/movement-logo.png"}
             />
             <img
               className="md:w-[15rem] w-[70%] h-full rounded-md object-cover object-top shadow-2xl shadow-grey-900 relative"
-              src={data?.cover_image || "/favicon.ico"}
+              src={data?.cover_image || "/assets/images/movement-logo.png"}
             />
             <div className="relative capitalize">
               <p>{data?.genre} Sample</p>
@@ -49,7 +50,7 @@ const SamplePage = () => {
                 {data?.title ?? ""}{" "}
               </h2>
               <div className="flex gap-2 items-center">
-                <Avatar src={data?.cover_image || "/favicon.ico"} />
+                <Avatar src={data?.cover_image || "/assets/images/movement-logo.png"} />
                 <p>
                   <strong className="text-sm">
                     {truncateString(data?.seller ?? "")}
@@ -94,7 +95,7 @@ const SamplePage = () => {
               <p className="text-lg md:text-xl mb-4">Fun Fact:</p>
               <div className="text-grey-200 leading-[1.6]  md:max-h-[35vh] overflow-y-auto scrollbar-hide space-y-6">
                 <p className="">
-                  Sampled showcases why Stellar beats Ethereum for marketplaces:
+                  Sampled showcases why Movement beats Ethereum for marketplaces:
                   instant payments, negligible fees, and real-time settlement. I
                   chose samples because producers feel the pain of slow payments
                   most acutely. But this same architecture works for any digital

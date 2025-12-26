@@ -13,6 +13,7 @@ export const UserProfileTabs = () => {
   const { isLoading, data } = useGetUserPurchases();
   const { isLoading: loadingUserSamples, data: user_samples } =
     useGetUserSamples();
+  console.log(user_samples, "samples")
 
   const items = [
     {

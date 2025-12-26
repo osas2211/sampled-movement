@@ -333,7 +333,7 @@ const UploadUI: React.FC<UploadUIProps> = ({ platformFeePercentage = 10 }) => {
       }
 
       const response = await uploadSample({
-        price: BigInt(Number(formData.price) * 10_000_000),
+        price: BigInt(Number(formData.price) * 100_000_000),
         ipfs_link: audioLink ?? "",
         bpm: Number(formData.bpm),
         title: formData.title,
@@ -501,7 +501,7 @@ const UploadUI: React.FC<UploadUIProps> = ({ platformFeePercentage = 10 }) => {
                         handleInputChange("price", e.target.value)
                       }
                     />
-                    <span className="price-currency">XLM</span>
+                    <span className="price-currency">MOVE</span>
                   </div>
                   {errors.price && (
                     <div className="error-text">{errors.price}</div>
@@ -566,7 +566,7 @@ const UploadUI: React.FC<UploadUIProps> = ({ platformFeePercentage = 10 }) => {
                   </div>
                   <div className="stat-card">
                     <div className="stat-label">You Earn</div>
-                    <div className="stat-value">{calculateEarnings()} XLM</div>
+                    <div className="stat-value">{calculateEarnings()} MOVE</div>
                   </div>
                 </div>
               </div>

@@ -3,32 +3,27 @@
 import { Avatar, Button } from "antd";
 import { useWalletBalance } from "../../hooks/useWalletBalance";
 // TODO: Define Sample type for Movement M1
-type Sample = {
-  id: number;
-  seller: string;
-  title: string;
-  price: number;
-  ipfs_link: string;
-  cover_image?: string;
-};
+
 import {
-  stroopsToXlm,
+  octasToMove,
   useHasPurchased,
   usePurchaseSample,
 } from "../../hooks/useSampledContract";
 import { downloadAudio } from "../../util/download-audio";
-import { useWallet } from "../../hooks/useWallet";
 import { toast } from "sonner";
 import { BsCheckCircleFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
+import { ISample } from "../../@types/sample"
+import { useWallet } from "@aptos-labs/wallet-adapter-react"
 
-export const PurchaseSampleTab = ({ sample }: { sample: Sample }) => {
+export const PurchaseSampleTab = ({ sample }: { sample: ISample }) => {
   const { balances, updateBalance } = useWalletBalance();
   const { data: hasPurchased, refetch: refetchPurchaseStatus } =
-    useHasPurchased(sample?.id);
+    useHasPurchased(sample?.sample_id);
   const { mutate: purchaseSample, isPending: isPurchasing } =
     usePurchaseSample();
-  const { address } = useWallet();
+  const { account } = useWallet();
+  const address = account?.address?.toString()
   const isSeller = address === sample?.seller;
 
   const handlePurchase = async () => {
@@ -44,7 +39,7 @@ export const PurchaseSampleTab = ({ sample }: { sample: Sample }) => {
 
     if (!sample) return;
 
-    purchaseSample(sample.id, {
+    purchaseSample(sample.sample_id, {
       onSuccess: (data) => {
         // Refetch purchase status
         toast.success("Success", {
@@ -54,7 +49,7 @@ export const PurchaseSampleTab = ({ sample }: { sample: Sample }) => {
           icon: <BsCheckCircleFill />,
           action: (
             <Link
-              to={`https://explorer.movementnetwork.xyz/tx/${data?.transactionHash}`}
+              to={`https://explorer.movementnetwork.xyz/txn/${data?.transactionHash}`}
               target="_blank"
               className="underline font-semibold"
             >
@@ -83,14 +78,14 @@ export const PurchaseSampleTab = ({ sample }: { sample: Sample }) => {
         </div>
         <p>
           <span className="text-grey-300">Balance:</span>{" "}
-          {Number(Number(balances[0]?.balance).toFixed(3)).toLocaleString()} XLM
+          {Number(Number(balances[0]?.balance).toFixed(3)).toLocaleString()} MOVE
         </p>
       </div>
 
       <div className="flex gap-2 items-center">
-        <Avatar src="/favicon.ico" />
+        <Avatar src="/assets/images/movement-logo.png" />
         <p className="text-lg md:text-xl">
-          Price: {stroopsToXlm(sample?.price)} XLM
+          Price: {octasToMove(sample?.price)} MOVE
         </p>
         {isSeller ? (
           <p className="bg-primary p-1 px-2 text-xs rounded-full text-black">

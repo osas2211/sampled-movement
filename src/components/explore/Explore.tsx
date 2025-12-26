@@ -109,7 +109,7 @@ export const Explore = () => {
                 </div>
                 <div className="w-[5rem] md:text-sm text-sm text-grey-200 flex items-center gap-3 mt-2">
                   <p className="">Powered by Stellar</p>
-                  <img src="/favicon.ico" alt="" className="w-5" />
+                  <img src="/assets/images/movement-logo.png" alt="" className="w-5" />
                   {/* <p>Stellar.</p> */}
                 </div>
               </div>

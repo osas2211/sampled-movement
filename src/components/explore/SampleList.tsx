@@ -6,12 +6,12 @@ import { LiaListUlSolid } from "react-icons/lia";
 import { SampleCard } from "./SampleCard";
 import { SampleListCard } from "./SampleListCard";
 import { SamplesSkeletonLoader } from "./SamplesSkeletonLoader";
-import { Sample } from "../../@types/stellar-generated";
+import { ISample } from "../../@types/sample"
 import { MdMusicNote } from "react-icons/md";
 
 interface propsI {
   title: string;
-  data: Sample[];
+  data: ISample[];
   isLoading: boolean;
 }
 
@@ -82,7 +82,9 @@ export const SampleList = ({ title, data, isLoading }: propsI) => {
   );
 };
 
-const GridView = ({ samples }: { samples: Sample[] }) => {
+const GridView = ({ samples }: { samples: ISample[] }) => {
+          console.log(samples)
+
   return (
     <>
       <div className="grid md:grid-cols-4 grid-cols-1 gap-5">
@@ -94,7 +96,7 @@ const GridView = ({ samples }: { samples: Sample[] }) => {
   );
 };
 
-const ListView = ({ samples }: { samples: Sample[] }) => {
+const ListView = ({ samples }: { samples: ISample[] }) => {
   return (
     <>
       <div className="grid grid-cols-1 gap-5">
