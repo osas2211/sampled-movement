@@ -20,6 +20,7 @@ export const PurchaseSampleTab = ({ sample }: { sample: ISample }) => {
   const { balances, updateBalance } = useWalletBalance();
   const { data: hasPurchased, refetch: refetchPurchaseStatus } =
     useHasPurchased(sample?.sample_id);
+  console.log(hasPurchased)
   const { mutate: purchaseSample, isPending: isPurchasing } =
     usePurchaseSample();
   const { account } = useWallet();
@@ -49,7 +50,7 @@ export const PurchaseSampleTab = ({ sample }: { sample: ISample }) => {
           icon: <BsCheckCircleFill />,
           action: (
             <Link
-              to={`https://explorer.movementnetwork.xyz/txn/${data?.transactionHash}`}
+              to={`https://explorer.movementnetwork.xyz/txn/${data?.transactionHash}?network=bardock+testnet`}
               target="_blank"
               className="underline font-semibold"
             >
@@ -61,9 +62,9 @@ export const PurchaseSampleTab = ({ sample }: { sample: ISample }) => {
         updateBalance();
 
         // Optionally auto-download after purchase
-        if (data.ipfs_link) {
+        if (sample.ipfs_link) {
           setTimeout(() => {
-            downloadAudio(data.ipfs_link, `${sample.title}.mp3`);
+            downloadAudio(sample.ipfs_link, `${sample.title}.mp3`);
           }, 2000);
         }
       },

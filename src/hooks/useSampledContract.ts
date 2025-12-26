@@ -27,9 +27,9 @@ export interface IPurchaseSamplePayload {
 }
 
 export interface IPurchaseSampleResponse {
-  ipfs_link: string
+  // ipfs_link: string
   transactionHash: string
-  sample_id: number
+  sample_id: string
 }
 
 /** Convert octas (smallest unit) to MOVE tokens (1 MOVE = 100,000,000 octas) */
@@ -165,7 +165,7 @@ export const useGetSample = (sample_id: string) => {
  * TODO: Implement with Movement SDK
  */
 export const usePurchaseSample = () => {
-  const { account, signTransaction } = useWallet()
+  const { account, signAndSubmitTransaction } = useWallet()
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -179,14 +179,21 @@ export const usePurchaseSample = () => {
         sample_id: Number(sampleId),
       }
 
-      // TODO: Implement Movement contract call
-      // const client = new MovementClient({ network: "testnet" });
-      // const tx = await client.contracts.sampled.purchase_sample(payload);
-      // const result = await signTransaction(tx);
-      // return { ipfs_link: result.ipfs_link, transactionHash: result.hash, sample_id: sampleId };
+      const response = await signAndSubmitTransaction({
+        sender: account.address,
+        data: {
+          function: `${CONTRACT_ADDRESS}::sampled_marketplace::purchase_sample`,
+          functionArguments: [
+            payload.sample_id,
+          ],
+        }
+      })
+      const transactionRes = await aptos.waitForTransaction({ transactionHash: response.hash })
+      return {
+        transactionHash: transactionRes.hash,
+        sample_id: sampleId
+      }
 
-      console.log("Purchase sample:", payload)
-      throw new Error("Movement contract integration not yet implemented")
     },
     onSuccess: (data) => {
       console.log("Purchase successful:", data)
@@ -197,7 +204,8 @@ export const usePurchaseSample = () => {
         queryKey: ["single-sample", data.sample_id],
       })
     },
-    onError: () => {
+    onError: (error) => {
+      console.log(error)
       toast.error("Error", {
         className: "!bg-red-500 *:!text-white !border-0",
         description: "Failed to purchase sample",
@@ -220,13 +228,16 @@ export const useHasPurchased = (sampleId: string) => {
     queryFn: async () => {
       if (!account?.address || !sampleId) return false
 
-      // TODO: Implement Movement contract query
-      // const client = new MovementClient({ network: "testnet" });
-      // const result = await client.contracts.sampled.has_purchased({ buyer: address, sample_id: sampleId });
-      // return result;
+      const hasPurchased = await aptos.view({
+        payload: {
+          function: `${CONTRACT_ADDRESS}::sampled_marketplace::has_purchased`,
+          functionArguments: [account?.address.toString(), sampleId],
+        }
+      })
 
-      console.log("Check has purchased:", account?.address.toString(), sampleId)
-      return false
+      return hasPurchased?.[0] as boolean
+
+
     },
     enabled: !!account?.address.toString() && !!sampleId,
   })
