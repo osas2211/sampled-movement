@@ -17,7 +17,7 @@ Sampled is a decentralized music sample marketplace built on Movement M1, levera
 ## Tech Stack
 
 - **Blockchain**: Movement M1 (Move smart contracts)
-- **Frontend**: React 19, TypeScript, Vite
+- **Frontend**: Move, React 19, TypeScript, Vite
 - **Styling**: Tailwind CSS, Ant Design
 - **Storage**: IPFS (Pinata)
 - **State Management**: React Query
@@ -90,10 +90,4 @@ Smart contracts will be written in Move for Movement M1. The hooks in `src/hooks
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## License
 
-[Add your license here]
-
-## Status
-
-Currently in development - migrating to Movement M1 blockchain.
