@@ -4,7 +4,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { ISample, IUploadSamplePayload } from "../@types/sample"
 import { toast } from "sonner"
 import { IoCloseCircleSharp } from "react-icons/io5"
-import { AptosClient, AptosAccount, Types } from "aptos"
 import { useWallet } from "@aptos-labs/wallet-adapter-react"
 import { Aptos, AptosConfig, Network } from '@aptos-labs/ts-sdk'
 // const client = new AptosClient("https://testnet.movementnetwork.xyz/v1");
@@ -118,7 +117,6 @@ export const useGetUserSamples = () => {
  * TODO: Implement with Movement SDK
  */
 export const useGetAllSamples = () => {
-  const { account } = useWallet()
 
   return useQuery({
     queryFn: async () => {
@@ -141,7 +139,6 @@ export const useGetAllSamples = () => {
  * TODO: Implement with Movement SDK
  */
 export const useGetSample = (sample_id: string) => {
-  const { account } = useWallet()
 
   return useQuery({
     queryFn: async () => {
@@ -274,7 +271,6 @@ export const useGetUserPurchases = () => {
  * TODO: Implement with Movement SDK
  */
 export const useGetStats = () => {
-  const { account } = useWallet()
 
   return useQuery({
     queryFn: async () => {
