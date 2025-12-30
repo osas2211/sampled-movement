@@ -43,6 +43,7 @@ module sampled_addr::sampled_marketplace {
     const MAX_IPFS_LINK_LENGTH: u64 = 256;
     const MAX_COVER_IMAGE_LENGTH: u64 = 256;
     const MAX_GENRE_LENGTH: u64 = 30;
+    const MAX_VIDEO_PREVIEW_LENGTH: u64 = 256;
 
     // ============================================
     // Data Structures
@@ -57,6 +58,7 @@ module sampled_addr::sampled_marketplace {
         bpm: u64,
         genre: String,
         cover_image: String,     // IPFS link for cover image
+        video_preview_link: String, // Optional IPFS link for video preview
         total_sales: u64,
         is_active: bool,
         created_at: u64,
@@ -179,6 +181,7 @@ module sampled_addr::sampled_marketplace {
         bpm: u64,
         genre: String,
         cover_image: String,
+        video_preview_link: String,
     ) acquires Marketplace, UserAccount {
         let seller_addr = signer::address_of(seller);
 
@@ -188,6 +191,7 @@ module sampled_addr::sampled_marketplace {
         assert!(string::length(&ipfs_link) <= MAX_IPFS_LINK_LENGTH, E_IPFS_LINK_TOO_LONG);
         assert!(string::length(&genre) <= MAX_GENRE_LENGTH, E_GENRE_TOO_LONG);
         assert!(string::length(&cover_image) <= MAX_COVER_IMAGE_LENGTH, E_COVER_IMAGE_TOO_LONG);
+        assert!(string::length(&video_preview_link) <= MAX_VIDEO_PREVIEW_LENGTH, E_COVER_IMAGE_TOO_LONG);
 
         // Get marketplace
         let marketplace = borrow_global_mut<Marketplace>(@sampled_addr);
@@ -206,6 +210,7 @@ module sampled_addr::sampled_marketplace {
             bpm,
             genre,
             cover_image,
+            video_preview_link,
             total_sales: 0,
             is_active: true,
             created_at: timestamp::now_seconds(),

@@ -4,7 +4,7 @@ version = "1.0.0"
 authors = []
 
 [addresses]
-sampled_addr = "0x462d050a0ff74fd8bb7afa8a70c3b63eedd7313cf5cfc1e47e285c7a3428a974"
+sampled_addr = "0xc8fda2536e05853bbb949dd40ccc086d722bb91008c7fd1757dc240e52f461e8"
 std = "0x1"
 aptos_framework = "0x1"
 aptos_std = "0x1"
