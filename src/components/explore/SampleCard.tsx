@@ -19,12 +19,25 @@ export const SampleCard = ({ sample }: propsI) => {
         </div>
 
         <div className="relative h-[25rem] w-full z-[1]">
-          <img
-            src={sample?.cover_image || "/assets/images/vr_guy.jpg"}
-            alt=""
-            // fill
-            className="w-full h-full object-cover rounded-xl"
-          />
+          {sample?.video_preview_link ? (
+            <>
+              <video
+                src={sample.video_preview_link}
+                className="w-full h-full object-cover rounded-xl"
+                autoPlay
+                loop
+                muted
+                playsInline
+              />
+              <div className="absolute inset-0 bg-black/30 rounded-xl pointer-events-none" />
+            </>
+          ) : (
+            <img
+              src={sample?.cover_image || "/assets/images/vr_guy.jpg"}
+              alt=""
+              className="w-full h-full object-cover rounded-xl"
+            />
+          )}
           <div className="absolute bottom-0 left-0 h-[11rem] w-full rounded-b-xl bg-black/15 backdrop-blur-[15px] z-[2] p-3">
             <p className="text-xl font-arvo">{sample?.title}</p>
             <div className="flex items-center gap-1">

@@ -15,7 +15,7 @@ const config = new AptosConfig({
 })
 const aptos = new Aptos(config)
 
-const CONTRACT_ADDRESS = "0x462d050a0ff74fd8bb7afa8a70c3b63eedd7313cf5cfc1e47e285c7a3428a974"
+const CONTRACT_ADDRESS = "0xc8fda2536e05853bbb949dd40ccc086d722bb91008c7fd1757dc240e52f461e8"
 
 // TODO: Import Movement SDK when available
 // import { MovementClient } from "@movement-labs/sdk";
@@ -57,7 +57,8 @@ export const useUploadSample = () => {
             request.title,
             request.bpm,
             request.genre,
-            request.cover_image
+            request.cover_image,
+            request.video_preview_link
           ],
         }
       })

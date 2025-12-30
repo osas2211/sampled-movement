@@ -26,6 +26,7 @@ interface SampleFormData {
   genre: Genre;
   tags: string[];
   coverImage?: File | null;
+  videoPreview?: File | null;
 }
 
 interface UploadProgress {
@@ -105,10 +106,12 @@ const UploadUI: React.FC<UploadUIProps> = ({ platformFeePercentage = 10 }) => {
   const [coverImagePreview, setCoverImagePreview] = useState<string | null>(
     null,
   );
+  const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
 
   // Refs
   const fileInputRef = useRef<HTMLInputElement>(null);
   const coverImageInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
 
   // File validation
   const validateFile = (file: File): boolean => {
@@ -198,6 +201,55 @@ const UploadUI: React.FC<UploadUIProps> = ({ platformFeePercentage = 10 }) => {
     }
   };
 
+  // Video preview handlers
+  const handleVideoSelect = (e: ChangeEvent<HTMLInputElement>): void => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      if (selectedFile.size > 100 * 1024 * 1024) {
+        // 100MB limit
+        toast.error("Error", {
+          className: "!bg-red-500 *:!text-white !border-0",
+          description: (
+            <p className="text-white">Video must be less than 100MB</p>
+          ),
+          duration: 5000,
+          icon: <IoCloseCircleSharp size={20} />,
+        });
+        return;
+      }
+
+      const validVideoTypes = ["video/mp4", "video/webm", "video/quicktime"];
+      if (!validVideoTypes.includes(selectedFile.type)) {
+        toast.error("Error", {
+          className: "!bg-red-500 *:!text-white !border-0",
+          description: (
+            <p className="text-white">Please upload MP4, WebM, or MOV file</p>
+          ),
+          duration: 5000,
+          icon: <IoCloseCircleSharp size={20} />,
+        });
+        return;
+      }
+
+      setFormData((prev) => ({ ...prev, videoPreview: selectedFile }));
+
+      // Create preview URL
+      const url = URL.createObjectURL(selectedFile);
+      setVideoPreviewUrl(url);
+    }
+  };
+
+  const removeVideoPreview = (): void => {
+    setFormData((prev) => ({ ...prev, videoPreview: null }));
+    if (videoPreviewUrl) {
+      URL.revokeObjectURL(videoPreviewUrl);
+    }
+    setVideoPreviewUrl(null);
+    if (videoInputRef.current) {
+      videoInputRef.current.value = "";
+    }
+  };
+
   // Audio analysis (placeholder for actual implementation)
   const analyzeAudio = async (audioFile: File): Promise<void> => {
     try {
@@ -257,6 +309,10 @@ const UploadUI: React.FC<UploadUIProps> = ({ platformFeePercentage = 10 }) => {
     setFile(null);
     setFileMetadata(null);
     setCoverImagePreview(null);
+    if (videoPreviewUrl) {
+      URL.revokeObjectURL(videoPreviewUrl);
+    }
+    setVideoPreviewUrl(null);
     setFormData({
       title: "",
       price: "",
@@ -265,6 +321,7 @@ const UploadUI: React.FC<UploadUIProps> = ({ platformFeePercentage = 10 }) => {
       genre: Genre.Trap,
       tags: [],
       coverImage: null,
+      videoPreview: null,
     });
     setErrors({});
     setUploadProgress({ status: "idle", percentage: 0 });
@@ -273,6 +330,9 @@ const UploadUI: React.FC<UploadUIProps> = ({ platformFeePercentage = 10 }) => {
     }
     if (coverImageInputRef.current) {
       coverImageInputRef.current.value = "";
+    }
+    if (videoInputRef.current) {
+      videoInputRef.current.value = "";
     }
   };
 
@@ -332,6 +392,12 @@ const UploadUI: React.FC<UploadUIProps> = ({ platformFeePercentage = 10 }) => {
         coverImageLink = await uploadFile(formData.coverImage);
       }
 
+      // Upload video preview if provided
+      let videoPreviewLink = "";
+      if (formData.videoPreview) {
+        videoPreviewLink = await uploadFile(formData.videoPreview);
+      }
+
       const response = await uploadSample({
         price: BigInt(Number(formData.price) * 100_000_000),
         ipfs_link: audioLink ?? "",
@@ -340,6 +406,7 @@ const UploadUI: React.FC<UploadUIProps> = ({ platformFeePercentage = 10 }) => {
         genre: formData.genre,
         seller:  account?.address.toString(),
         cover_image: coverImageLink,
+        video_preview_link: videoPreviewLink,
       });
 
       toast.success("Success", {
@@ -571,7 +638,8 @@ const UploadUI: React.FC<UploadUIProps> = ({ platformFeePercentage = 10 }) => {
                 </div>
               </div>
 
-              {/* Cover Image Upload */}
+             <div className="">
+               {/* Cover Image Upload */}
               <div className="form-group">
                 <label className="form-label">Cover Image (Optional)</label>
 
@@ -612,6 +680,49 @@ const UploadUI: React.FC<UploadUIProps> = ({ platformFeePercentage = 10 }) => {
                   </div>
                 )}
               </div>
+
+              {/* Video Preview Upload */}
+              <div className="form-group">
+                <label className="form-label">Video Preview (Optional)</label>
+
+                {!videoPreviewUrl ? (
+                  <div
+                    className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center cursor-pointer hover:border-primary transition-colors bg-grey-900"
+                    onClick={() => videoInputRef.current?.click()}
+                  >
+                    <Upload className="mx-auto mb-2 text-gray-400" size={32} />
+                    <p className="text-sm text-gray-400">
+                      Click to upload video preview
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      MP4, WebM, MOV up to 100MB
+                    </p>
+                    <input
+                      ref={videoInputRef}
+                      type="file"
+                      accept="video/mp4,video/webm,video/quicktime"
+                      onChange={handleVideoSelect}
+                      className="hidden"
+                    />
+                  </div>
+                ) : (
+                  <div className="relative rounded-lg overflow-hidden border-2 border-primary/30">
+                    <video
+                      src={videoPreviewUrl}
+                      className="w-full h-48 object-cover"
+                      controls
+                    />
+                    <button
+                      onClick={removeVideoPreview}
+                      className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 transition-colors"
+                      type="button"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                )}
+              </div>
+             </div>
             </div>
           )}
 

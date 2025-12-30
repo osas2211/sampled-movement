@@ -6,6 +6,7 @@ export interface IUploadSamplePayload {
   bpm: number
   genre: string
   cover_image: string
+  video_preview_link: string
 }
 
 export interface ISample {
@@ -20,4 +21,5 @@ export interface ISample {
   title: string
   total_sales: string
   cover_image: string
+  video_preview_link: string
 }
