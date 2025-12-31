@@ -174,7 +174,7 @@ export const HeroAlt = () => {
           />
           <div className="text-lg md:text-xl space-y-0 mt-2 hero-video-text">
             <p>Upload once. Get Sampled forever.</p>
-            <p>Instant payments on Stellar.</p>
+            <p>Instant payments on Movement.</p>
           </div>
         </div>
       </div>

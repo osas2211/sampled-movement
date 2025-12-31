@@ -1,6 +1,5 @@
 // sources/sampled_marketplace.move
 // Sampled - Music Sample Marketplace on Movement
-// Ported from Stellar/Soroban to Move
 
 module sampled_addr::sampled_marketplace {
     use std::signer; 

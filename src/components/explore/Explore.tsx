@@ -108,9 +108,9 @@ export const Explore = () => {
                   </Link>
                 </div>
                 <div className="w-[5rem] md:text-sm text-sm text-grey-200 flex items-center gap-3 mt-2">
-                  <p className="">Powered by Stellar</p>
+                  <p className="">Powered by Movement</p>
                   <img src="/assets/images/movement-logo.png" alt="" className="w-5" />
-                  {/* <p>Stellar.</p> */}
+                  {/* <p>Movement.</p> */}
                 </div>
               </div>
             );

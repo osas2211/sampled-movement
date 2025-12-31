@@ -32,7 +32,7 @@ export const SampleDetails = () => {
         </div>
         <div className="flex items-center gap-1">
           <Avatar src="/assets/images/movement-logo.png" size={16} />
-          <p>Stellar</p>
+          <p>Movement M1</p>
         </div>
       </div>
       <div className="flex items-center gap-4 justify-between p-4 py-3 rounded-lg bg-grey-700">

@@ -61,7 +61,7 @@ export const About = () => {
             <p className="md:text-end">
               Finally, a{" "}
               <span className="text-primary underline">marketplace</span> on
-              Stellar where
+              Movement where
             </p>
             <p className="">
               producers own their work, set their prices, and get paid the
@@ -96,7 +96,7 @@ export const About = () => {
 
           <div>
             <p className="max-w-[450px] leading-[1.7] top-desc-1">
-              Sampled showcases why Stellar beats Ethereum for marketplaces:
+              Sampled showcases why Movement beats Ethereum for marketplaces:
               instant payments, negligible fees, and real-time settlement. I
               chose samples because producers feel the pain of slow payments
               most acutely. But this same architecture works for any digital
